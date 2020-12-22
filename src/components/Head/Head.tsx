@@ -1,11 +1,11 @@
-import React, { useRef } from "react";
+import React, { FC, useCallback, useEffect, useRef } from "react";
 import { GLTF, GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
-import { useFrame, useLoader } from "react-three-fiber";
+import { useLoader, useThree } from "react-three-fiber";
 import { Mesh } from 'three'
 
 type GLTFResult = GLTF & {
   nodes: {
-    Group2: THREE.Mesh
+    Head: THREE.Mesh
   }
   materials: {
     base: THREE.MeshStandardMaterial
@@ -13,24 +13,42 @@ type GLTFResult = GLTF & {
   }
 }
 
-const Sphere = () => {
+const Head: FC = () => {
   const modelEl = useRef<Mesh>(null);
   const { nodes } = useLoader<GLTFResult>(GLTFLoader, "./david_head.gltf");
+  const { mouse } = useThree()
 
-  useFrame(() => {
-    // if (modelEl.current) modelEl.current.rotation.z += 0.02
-  });
+  const mousemoveHandler = useCallback(() => {
+    const rotateY = mouse.x * 1000;
+    const rotateX = -mouse.y * 1000;
+
+    if (modelEl.current) {
+      modelEl.current.rotation.y = 0.0003 * rotateY
+      modelEl.current.rotation.x = 0.0003 * rotateX
+    }
+  }, [mouse.x, mouse.y])
+
+  useEffect(() => {
+    window.addEventListener("mousemove", mousemoveHandler);
+
+    return () => {
+      window.removeEventListener("mousemove", mousemoveHandler);
+    };
+  }, [mousemoveHandler])
 
   return (
     <group ref={modelEl}>
-      {/* <group rotation={[1, 0, 0]} position={[0, -45, -1]}> */}
-      <group rotation={[0, 0, 0]} position={[0, 0, 0]}>
-        <mesh material={nodes.Group2.material} receiveShadow castShadow>
-          <bufferGeometry attach="geometry" {...nodes.Group2.geometry} />
+      <group rotation={[1.65, 0.1, 1.5]} position={[0, -49, 0]}>
+        <mesh
+          material={nodes.Head.material}
+          receiveShadow
+          castShadow
+        >
+          <bufferGeometry attach="geometry" {...nodes.Head.geometry} />
         </mesh>
       </group>
     </group>
   );
 };
 
-export default Sphere;
+export default Head;
