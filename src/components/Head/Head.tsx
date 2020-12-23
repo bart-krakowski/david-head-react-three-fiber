@@ -1,21 +1,23 @@
 import React, { FC, useCallback, useEffect, useRef } from "react";
 import { GLTF, GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { useLoader, useThree } from "react-three-fiber";
-import { Mesh } from 'three'
+import { Mesh, MeshStandardMaterial } from 'three'
 
 type GLTFResult = GLTF & {
   nodes: {
-    Head: THREE.Mesh
+    Head: {
+      children: Array<Mesh>
+    }
   }
   materials: {
-    base: THREE.MeshStandardMaterial
-    inner: THREE.MeshStandardMaterial
+    base: MeshStandardMaterial
+    inner: MeshStandardMaterial
   }
 }
 
 const Head: FC = () => {
   const modelEl = useRef<Mesh>(null);
-  const { nodes } = useLoader<GLTFResult>(GLTFLoader, "./david_head.gltf");
+  const { nodes } = useLoader<GLTFResult>(GLTFLoader, "./david_head-fragments.gltf");
   const { mouse } = useThree()
 
   const mousemoveHandler = useCallback(() => {
@@ -38,14 +40,17 @@ const Head: FC = () => {
 
   return (
     <group ref={modelEl}>
-      <group rotation={[1.65, 0.1, 1.5]} position={[0, -49, 0]}>
-        <mesh
-          material={nodes.Head.material}
-          receiveShadow
-          castShadow
-        >
-          <bufferGeometry attach="geometry" {...nodes.Head.geometry} />
-        </mesh>
+      <group rotation={[1.65, 0.1, 1.5]} position={[0, 0, 0]} scale={[50, 50, 50]}>
+        {nodes.Head.children.map((el) => (
+          <mesh
+            key={el.name}
+            material={el.material}
+            receiveShadow
+            castShadow
+          >
+            <bufferGeometry attach="geometry" {...el.geometry} />
+          </mesh>
+        ))}
       </group>
     </group>
   );
