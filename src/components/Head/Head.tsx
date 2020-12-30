@@ -1,7 +1,7 @@
 import React, { createRef, FC, useCallback, useEffect, useRef } from 'react';
 import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { useFrame, useLoader, useThree } from 'react-three-fiber';
-import { Mesh, MeshStandardMaterial, Group } from 'three'
+import { Mesh, MeshStandardMaterial, Group, Material } from 'three'
 import './CustomMaterial'
 
 type GLTFResult = GLTF & {
@@ -22,6 +22,7 @@ const Head: FC = () => {
   const { mouse } = useThree()
   const headRef = useRef<Group>(null)
   const particles = nodes.Head.children.map(() => createRef<Mesh>())
+  const customMaterialRef = useRef<any>(null)
 
   const mousemoveHandler = useCallback(() => {
     const rotateY = mouse.x * 1000;
@@ -65,6 +66,8 @@ const Head: FC = () => {
     if (headRef.current && headRef.current.rotation.x < 1.2) {
       headRef.current.rotation.x = headRef.current.rotation.x * 1.01
     }
+
+    customMaterialRef.current.uniforms.progress.value = 1
   })
 
   return (
@@ -80,7 +83,7 @@ const Head: FC = () => {
             material={el.material}
           >
             <bufferGeometry attach="geometry" {...el.geometry} />
-            <customMaterial attach="material" />
+            <customMaterial attach="material" ref={customMaterialRef} />
             {/* <meshStandardMaterial attach="material" /> */}
           </mesh>
         ))}
