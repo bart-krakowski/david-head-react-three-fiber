@@ -35,7 +35,7 @@ const Lights = () => {
   return (
     <>
       <ambientLight color="#636363" />
-      {/* <pointLight position={[40, 10, 17]} /> */}
+      <pointLight position={[40, 10, 17]} />
       <pointLight
         position={[40, 10, 17]}
         color="#FF00FF"
