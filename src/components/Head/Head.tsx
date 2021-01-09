@@ -33,8 +33,11 @@ const Head: FC = () => {
     const rotateX = -mouse.y * 1000;
 
     if (modelEl.current) {
-      modelEl.current.rotation.y = 0.0003 * rotateY
-      modelEl.current.rotation.x = 0.0003 * rotateX
+      gsap.to(modelEl.current.rotation, {
+        x: 0.0003 * rotateX,
+        y: 0.0003 * rotateY,
+        duration: 0.5
+      })
     }
   }, [mouse.x, mouse.y])
 
