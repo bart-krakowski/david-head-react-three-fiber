@@ -1,7 +1,9 @@
-import React, { createRef, FC, useCallback, useEffect, useRef } from 'react';
+import React, { createRef, FC, useCallback, useEffect, useRef, useState } from 'react';
 import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { useFrame, useLoader, useThree } from 'react-three-fiber';
 import { Mesh, MeshStandardMaterial, Group, Material } from 'three'
+import { gsap } from 'gsap'
+
 import './CustomMaterial'
 
 type GLTFResult = GLTF & {
@@ -23,6 +25,8 @@ const Head: FC = () => {
   const headRef = useRef<Group>(null)
   const particles = nodes.Head.children.map(() => createRef<Mesh>())
   const customMaterialRef = useRef<any>(null)
+  const [isAnimated, setIsAnimated] = useState<boolean>(false)
+  const initialPositions = useRef<any>(nodes.Head.children.map((el) => el.position))
 
   const mousemoveHandler = useCallback(() => {
     const rotateY = mouse.x * 1000;
@@ -42,37 +46,29 @@ const Head: FC = () => {
     };
   }, [mousemoveHandler])
 
-  let currentPosition = 0
-  let delta = 1.02
-  const initialPosition = useRef<number | undefined>(0)
-
   useEffect(() => {
-    initialPosition.current = particles[0].current?.position.x
-  }, [particles])
+    particles.map((el, index) => {
+      if (el.current) gsap.to(el.current.position, {
+        x: isAnimated ? el.current.position.x * 4 : initialPositions.current[index].x,
+        y: isAnimated ? el.current.position.y * 4 : initialPositions.current[index].y,
+        z: isAnimated ? el.current.position.z * 4 : initialPositions.current[index].z,
+        duration: 1.5, ease: 'power2.out'
+      })
+    })
 
-  useFrame(() => {
-    if (initialPosition.current && currentPosition <= initialPosition.current * 4) {
-      particles.map((el) => (
-        el.current?.position.set(
-          el.current.position.x * delta,
-          el.current.position.y * delta,
-          el.current.position.z * delta,
-        )
-      ))
-
-      currentPosition = particles[0].current ? particles[0].current.position.x : 0
+    if (headRef.current) {
+      if(headRef.current) gsap.to(headRef.current.rotation, { x: isAnimated ? 1.2 : 0, duration: 1.5, ease: 'power2.out' })
     }
-
-    if (headRef.current && headRef.current.rotation.x < 1.2) {
-      headRef.current.rotation.x = headRef.current.rotation.x * 1.01
-    }
-
-    customMaterialRef.current.uniforms.progress.value = 1
-  })
+  }, [isAnimated, particles])
 
   return (
-    <group ref={modelEl}>
-      <group position={[0, 0, 0]} rotation={[0.5, -1.6, 0]} ref={headRef}>
+    <group ref={modelEl}
+      onClick={(e) => {
+        e.stopPropagation()
+        setIsAnimated(!isAnimated)
+      }}
+    >
+      <group position={[0, 0, 0]} rotation={[0, -1.6, 0]} ref={headRef}>
         {nodes.Head.children.map((el, index) => (
           <mesh
             key={index}
@@ -83,7 +79,7 @@ const Head: FC = () => {
             material={el.material}
           >
             <bufferGeometry attach="geometry" {...el.geometry} />
-            <customMaterial attach="material" ref={customMaterialRef} />
+            {/* <customMaterial attach="material" ref={customMaterialRef} /> */}
             {/* <meshStandardMaterial attach="material" /> */}
           </mesh>
         ))}
