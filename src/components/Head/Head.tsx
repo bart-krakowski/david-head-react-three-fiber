@@ -55,12 +55,12 @@ const Head: FC = () => {
         x: isAnimated ? el.current.position.x * 4 : initialPositions.current[index].x,
         y: isAnimated ? el.current.position.y * 4 : initialPositions.current[index].y,
         z: isAnimated ? el.current.position.z * 4 : initialPositions.current[index].z,
-        duration: 1.5, ease: 'power2.out'
+        duration: 1.5, ease: 'power2.inOut'
       })
     })
 
     if (headRef.current) {
-      if(headRef.current) gsap.to(headRef.current.rotation, { x: isAnimated ? 1.2 : 0, duration: 1.5, ease: 'power2.out' })
+      if(headRef.current) gsap.to(headRef.current.rotation, { x: isAnimated ? 1.2 : 0, duration: 1.5, ease: 'power2.inOut' })
     }
   }, [isAnimated, particles])
 
