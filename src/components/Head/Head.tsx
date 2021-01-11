@@ -24,7 +24,7 @@ const Head: FC = () => {
   const { mouse } = useThree()
   const headRef = useRef<Group>(null)
   const particles = nodes.Head.children.map(() => createRef<Mesh>())
-  const customMaterialRef = useRef<any>(null)
+  // const customMaterialRef = useRef<any>(null)
   const [isAnimated, setIsAnimated] = useState<boolean>(false)
   const initialPositions = useRef<any>(nodes.Head.children.map((el) => el.position))
 
@@ -50,6 +50,7 @@ const Head: FC = () => {
   }, [mousemoveHandler])
 
   useEffect(() => {
+    // eslint-disable-next-line array-callback-return
     particles.map((el, index) => {
       if (el.current) gsap.to(el.current.position, {
         x: isAnimated ? el.current.position.x * 4 : initialPositions.current[index].x,
