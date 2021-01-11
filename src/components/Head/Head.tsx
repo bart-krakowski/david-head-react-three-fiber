@@ -1,7 +1,7 @@
 import React, { createRef, FC, useCallback, useEffect, useRef, useState } from 'react';
 import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { useLoader, useThree } from 'react-three-fiber';
-import { Mesh, MeshStandardMaterial, Group, Material } from 'three'
+import { Mesh, MeshStandardMaterial, Group } from 'three'
 import { gsap } from 'gsap'
 
 import './CustomMaterial'
